@@ -9,9 +9,9 @@ const defaultState = {
     menu: 'collapsible',
     layout: 'full',
     rtlClass: 'ltr',
-    animation: '',
-    navbar: 'navbar-sticky',
-    locale: 'en',
+    animation: 'fade',
+    navbar: 'navbar-floating',
+    locale: 'es',
     sidebar: false,
     pageTitle: '',
     languageList: [
@@ -134,7 +134,7 @@ const themeConfigSlice = createSlice({
         },
 
         setPageTitle(state, { payload }) {
-            document.title = `${payload} | VRISTO - Multipurpose Tailwind Dashboard Template`;
+            document.title = `${payload}`;
         },
     },
 });
