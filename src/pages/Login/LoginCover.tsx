@@ -86,7 +86,7 @@ const LoginCover = () => {
                 sessionStorage.setItem('roles', decoded["roles"]);
       
                 console.log("hola",sessionStorage.getItem("usuario"));
-                navigate('./router/index');              
+                navigate('/sales');              
       
               } 
               else { toastr.error(response.statusText, '¡Upss!'); }

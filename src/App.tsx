@@ -26,7 +26,7 @@ function App({ children }: PropsWithChildren) {
                 themeConfig.rtlClass
             } main-section antialiased relative font-nunito text-sm font-normal`}
         >
-           <Login />
+           {children}
         </div>
     );
 }

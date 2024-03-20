@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
+const Login = lazy(() => import('../pages/Login/LoginCover'));
+const Sales = lazy(() => import('../pages/Sales'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
 const Crypto = lazy(() => import('../pages/Crypto'));
@@ -104,13 +106,17 @@ const routes = [
     // dashboard
     {
         path: '/',
-        element: <Index />,
+        element: <Login />,
     },
     // {
     //     path: '/index',
     //     element: <Index />,
     // },
     // analytics page
+    {
+        path: '/sales',
+        element: <Sales />,
+    },
     {
         path: '/analytics',
         element: <Analytics />,

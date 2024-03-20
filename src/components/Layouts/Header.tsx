@@ -138,8 +138,10 @@ const Header = () => {
 
     const { t } = useTranslation();
 
+    const showNavbar = location.pathname !== '/';
+
     return (
-        <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
+        <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''} ${showNavbar ? 'block' : 'hidden'}` } >
             <div className="shadow-sm">
                 <div className="relative bg-white flex w-full items-center px-5 py-2.5 dark:bg-black">
                     <div className="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
@@ -480,7 +482,7 @@ const Header = () => {
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/">{t('sales')}</NavLink>
+                                <NavLink to="/sales">{t('sales')}</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/analytics">{t('analytics')}</NavLink>
