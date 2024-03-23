@@ -1,6 +1,10 @@
 import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
 const Login = lazy(() => import('../pages/Login/LoginCover'));
+const Dashboard = lazy(() => import('../pages/Dashboard/Dashboard'));
+const Torneos = lazy(() => import('../pages/Torneos/Torneos'));
+
+/**************************************************************************************************************** */
 const Sales = lazy(() => import('../pages/Sales'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -107,6 +111,14 @@ const routes = [
     {
         path: '/',
         element: <Login />,
+    },
+    {
+        path: '/dashboard',
+        element: <Dashboard />,
+    },
+    {
+        path: '/torneos',
+        element: <Torneos />,
     },
     // {
     //     path: '/index',

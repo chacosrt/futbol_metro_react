@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import toastr from 'toastr';
 import axios from 'axios';
-import 'toastr/build/toastr.css'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
