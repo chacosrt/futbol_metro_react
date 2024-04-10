@@ -31,7 +31,7 @@ const defaultState = {
         { code: 'sv', name: 'Swedish' },
         { code: 'tr', name: 'Turkish' },
     ],
-    semidark: false,
+    semidark: true,
 };
 
 const initialState = {

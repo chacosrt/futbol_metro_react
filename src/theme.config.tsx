@@ -6,7 +6,7 @@ const themeConfig = {
     rtlClass: 'ltr', // rtl, ltr
     animation: 'fade', // animate__fadeIn, animate__fadeInDown, animate__fadeInUp, animate__fadeInLeft, animate__fadeInRight, animate__slideInDown, animate__slideInLeft, animate__slideInRight, animate__zoomIn
     navbar: 'navbar-floating', // navbar-sticky, navbar-floating, navbar-static
-    semidark: false
+    semidark: true
 };
 
 export default themeConfig;
