@@ -10,13 +10,15 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1060;
+            z-index: 9999;
         }
 
         /* Estilo del modal */
         .modal-content {
             position: relative;
         }
+        
+
 
         /* Estilo del GIF spinner */
         #spinner {

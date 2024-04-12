@@ -37,17 +37,15 @@ const MultipleTables = () => {
     const [horariosList,setListHoras] = useState([])
     const [diasList,setListDias] = useState([])
 
-    const [torneosList, setData] = useState([]);
-    const [initialRecords, setInitialRecords] = useState(torneosList);
+    const [equiposList, setData] = useState([]);
+    const [torneosList, setDataTorneos] = useState([]);
+    const [initialRecords, setInitialRecords] = useState(equiposList);
     const [recordsData, setRecordsData] = useState(initialRecords);
     const [modal9, setModal9] = useState(false);
     
     const defaultFile = "/assets/images/users/multi-user.jpg"
 
-    const options = [
-        { value: 'Copa', label: 'Copa' },
-        { value: 'Liga', label: 'Liga' },
-    ];
+    const [options, setOption1] = useState([]);
 
     const options2 = [        
         { value: 'Martes', label: 'Martes' },
@@ -66,6 +64,7 @@ const MultipleTables = () => {
     ];
 
     useEffect(() => {
+        getTorneos();
         fetchData();
         listaHoras();
         
@@ -205,14 +204,49 @@ const MultipleTables = () => {
                 'Access-Control-Allow-Origin': "*"
             };
 
-            const response = await axios.get('https://apis.dinossolutions.com/roni/torneos_list/',{ headers: headers }); // Reemplaza con la URL de tu API
+            const response = await axios.get('https://apis.dinossolutions.com/roni/equipos_list/',{ headers: headers }); // Reemplaza con la URL de tu API
              // Actualiza el estado de data con los datos de la API
             
             setData(response.data)
             setIsActive(false)           
             setInitialRecords(response.data)
             setRecordsData(response.data)
-           // console.log('list'+torneosList)
+           // console.log('list'+equiposList)
+            return equiposList
+            //console.log(response)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+     //////////////////////////////////////OBTENER TORNEOS///////////////////////////////////////////////////////
+
+     const getTorneos = async () => {
+        try {
+
+            let value = await  getToken();
+            //console.log("Token :" + value)
+            var headers = {
+                'Content-Type': 'application/json', // Tipo de contenido de la solicitud
+                'Authorization': 'Bearer ' + value, // Token de autorización, ajusta según tus necesidades
+                'Access-Control-Allow-Origin': "*"
+            };
+
+            const response = await axios.get('https://apis.dinossolutions.com/roni/torneos_list/',{ headers: headers }); // Reemplaza con la URL de tu API
+             // Actualiza el estado de data con los datos de la API
+             const tor_list = []
+
+             const torneos = response.data
+             
+             
+             for(let option=0; option < torneos.length; option++){
+                 const newOption = {value:torneos[option].nombre_torneo,label:torneos[option].nombre_torneo}
+                 tor_list.push(newOption);
+             }
+            setDataTorneos(tor_list)
+            setTorneo(tor_list[0].value)
+            
+            console.log('list'+JSON.stringify(tor_list))
             return torneosList
             //console.log(response)
         } catch (error) {
@@ -227,10 +261,11 @@ const MultipleTables = () => {
 
     const [idEdit, setId] = useState('');
     const [imgTorneo, setImg] = useState('');
+    const [torneo,setTorneo] = useState('')
 
     const [name, setName] = useState('');
     const [lugar, setlugar] = useState('');
-    const [mod, setMod] = useState('Liga');
+    const [mod, setMod] = useState('');
     const [temp, setTemp] = useState('');
     const [dias, setDias] = useState('');
     const [horarios, setHorarios] = useState('');
@@ -238,6 +273,12 @@ const MultipleTables = () => {
     const [fecha_fin, setFechaFin] = useState<any>('2024-01-01');
     const [cat, setCat] = useState('Libre');
     const imgRef = useRef(null);
+
+    const handleTorneoChange = (event: any) => {
+
+        setTorneo(event.value);
+        setSearchSelect(event.value)
+    };
 
     const handleNameChange = (event: any) => {
         setName(event.target.value);
@@ -509,7 +550,7 @@ const MultipleTables = () => {
 
                     var headers = {
                         'Content-Type': 'application/json', // Tipo de contenido de la solicitud
-                        'Authorization': 'Bearer ' + token, // Token de autorización, ajusta según tus necesidades
+                        'Authorization': 'Bearer ' + token, // Token de autorización, ajusta según tus necesidades 
                         'Access-Control-Allow-Origin': "*"
                     };
                     
@@ -544,19 +585,21 @@ const MultipleTables = () => {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    
     useEffect(() => {
-        dispatch(setPageTitle('Torneos'));
+        dispatch(setPageTitle('Equipos'));
         //fetchData();
     });
 
     const [page, setPage] = useState(1);
-    const PAGE_SIZES = [2,3,6];
+    const PAGE_SIZES = [5,10,15];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    /* const [initialRecords, setInitialRecords] = useState(torneosList);
+    /* const [initialRecords, setInitialRecords] = useState(equiposList);
     const [recordsData, setRecordsData] = useState(initialRecords);
  */
     const [search, setSearch] = useState('');
+    const [searchSelect, setSearchSelect] = useState('');
+
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'nombre_torneo',
+        columnAccessor: 'nombre',
         direction: 'asc',
     });
     
@@ -571,21 +614,18 @@ const MultipleTables = () => {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    //console.log(torneosList)
+    //console.log(equiposList)
 
     useEffect(() => {
         setInitialRecords(() => {
-            return torneosList.filter((item:any) => { 
+            return equiposList.filter((item:any) => { 
                 return (
                     //console.log(item.nombre_torneo)
-                    item.nombre_torneo.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.temporada.toLowerCase().includes(search.toLowerCase()) ||
-                    item.modalidad.toLowerCase().includes(search.toLowerCase()) ||
-                    item.lugar.toLowerCase().includes(search.toLowerCase()) ||
-                    item.dias.toLowerCase().includes(search.toLowerCase()) ||
-                    item.categoria.toLowerCase().includes(search.toLowerCase()) ||
-                    item.fecha_inicio.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.fecha_fin.toString().toLowerCase().includes(search.toLowerCase())  
+                    item.nombre.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.liga_equipo.nombre_torneo.toLowerCase().includes(search.toLowerCase()) ||
+                    item.delegado.toLowerCase().includes(search.toLowerCase()) 
+                    //item.estatus.toLowerCase().includes(search.toLowerCase()) 
+                     
                 );
             });
         });
@@ -593,7 +633,23 @@ const MultipleTables = () => {
     }, [search]);
 
     useEffect(() => {
-        const data = sortBy(torneosList, sortStatus.columnAccessor);
+        setInitialRecords(() => {
+            return equiposList.filter((item:any) => { 
+                return (
+                    //console.log(item.nombre_torneo)                    
+                    item.nombre.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.liga_equipo.nombre_torneo.toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.delegado.toLowerCase().includes(searchSelect.toLowerCase()) 
+                    //item.estatus.toLowerCase().includes(search.toLowerCase()) 
+                     
+                );
+            });
+        });
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchSelect]);
+
+    useEffect(() => {
+        const data = sortBy(equiposList, sortStatus.columnAccessor);
         setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -610,10 +666,13 @@ const MultipleTables = () => {
                     </div>
                 {/* <!-- End spinner -->     */}
                 <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
-                    <h1 className="font-semibold text-lg dark:text-white-light">Torneos</h1>
+                    <h1 className="font-semibold text-lg dark:text-white-light">Equipos</h1>
                     <button onClick={() => setModal9(true)} type="button" className="btn btn-success w-10 h-10 p-0 rounded-full">
                         <IconPlus className="w-6 h-6" />
                     </button>
+                    <div className='col-lg-2'>                        
+                        <Select onChange={(e) => handleTorneoChange}  className='z-[999] col-lg-2' value={torneo} options={torneosList} isSearchable={false} id="torneo" name="torneo"/>
+                    </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
                     </div>
@@ -624,27 +683,37 @@ const MultipleTables = () => {
                         records={recordsData}
                         columns={[
                             {
-                                accessor: 'nombre_torneo',
-                                title: 'Nombre Torneo',
+                                accessor: 'nombre',
+                                title: 'Equipo',
                                 titleClassName: '!text-center',
                                 sortable: true,
-                                render: ({nombre_torneo,img}) => (
+                                render: ({nombre,img}) => (
                                     <div className="flex items-center w-max">                                
                                         
                                         <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img} alt="" />
                                         {/* <div dangerouslySetInnerHTML={{ __html: img }}/> */}
-                                        <div>{nombre_torneo} </div>
+                                        <div>{nombre} </div>
                                     </div>
                                 ),
                             },  
-                            { accessor: 'lugar', title: 'Lugar',titleClassName: '!text-center', sortable: true },     
-                            { accessor: 'temporada', title: 'Temporada',titleClassName: '!text-center', sortable: true },       
-                            { accessor: 'modalidad', title: 'Modalidad',titleClassName: '!text-center', sortable: true },  
-                            { accessor: 'dias', title: 'Días',titleClassName: '!text-center', sortable: true },    
-                            { accessor: 'horarios', title: 'Horarios',titleClassName: '!text-center', sortable: true },     
-                            { accessor: 'fecha_inicio', title: 'Fecha Inicio',titleClassName: '!text-center', sortable: true }, 
-                            { accessor: 'fecha_fin', title: 'Fecha Fin',titleClassName: '!text-center', sortable: true },  
-                            { accessor: 'categoria', title: 'Categoria',titleClassName: '!text-center', sortable: true },
+                            { accessor: 'liga_equipo.nombre_torneo', title: 'Liga',titleClassName: '!text-center', sortable: true },     
+                            { accessor: 'delegado', title: 'Delegado',titleClassName: '!text-center', sortable: true },       
+                            { accessor: 'estatus',
+                              title: 'Estatus',
+                              titleClassName: '!text-center',
+                              sortable: true,
+                              render: ({estatus}) => (  
+                                
+                                
+                                                             
+                                <div className={`${estatus === 1 ? 'text-success bg-success-light' : 'text-danger bg-danger-light'} flex items-center w-max`}>                           
+                                    <div>
+                                        {`${estatus === 1 ? 'Activo' : 'Baja'}`}
+                                    </div>
+                                </div>
+                             ),  
+                            
+                            },     
                             {
                                 accessor: 'action',
                                 title: 'Action',

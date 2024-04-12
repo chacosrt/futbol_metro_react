@@ -94,7 +94,7 @@ const Sidebar = () => {
                     </div>
                     <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
                         <ul className="relative font-semibold space-y-0.5 p-4 py-0">
-                                                                    
+                             {/* ********************* Menu lateral *******************************************/}                                       
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`}>
                                     <div className="flex items-center">                                        
@@ -102,9 +102,18 @@ const Sidebar = () => {
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark"><NavLink to="/torneos">{t('Torneos')}</NavLink></span>
                                     </div>                            
                                 </button>                                   
-                            </li>          
+                            </li>   
 
-                            
+                            <li className="menu nav-item">
+                                <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`}>
+                                    <div className="flex items-center">                                        
+                                        <img src="/assets/images_metro/icons/equipos.png" width={25} height={20} alt="Logo" className="navbar-logo" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark"><NavLink to="/equipos">{t('Equipos')}</NavLink></span>
+                                    </div>                            
+                                </button>                                   
+                            </li>        
+
+                            {/************************************************************************************** */}
                             
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
