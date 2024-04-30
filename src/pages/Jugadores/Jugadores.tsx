@@ -24,6 +24,7 @@ import IconX from '../../components/Icon/IconX';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import { IRootState } from '../../store';
+import IconTrendingUp from '../../components/Icon/IconTrendingUp';
 
 
 const MultipleTables = () => {
@@ -40,10 +41,10 @@ const MultipleTables = () => {
 
     const [inputSearch,setInputSearch] = useState('')
 
-    const [equiposList, setData] = useState([]);
+    const [jugadoresList, setData] = useState([]);
     const [torneosList, setDataTorneos] = useState([]);
     const [torneosListForm, setDataTorneosForm] = useState([]);
-    const [initialRecords, setInitialRecords] = useState(equiposList);
+    const [initialRecords, setInitialRecords] = useState(jugadoresList);
     const [recordsData, setRecordsData] = useState(initialRecords);
     const [modal9, setModal9] = useState(false);
     
@@ -185,7 +186,7 @@ const MultipleTables = () => {
                 'Access-Control-Allow-Origin': "*"
             };
 
-            const response = await axios.get('https://apis.dinossolutions.com/roni/equipos_list/',{ headers: headers }); // Reemplaza con la URL de tu API
+            const response = await axios.get('https://apis.dinossolutions.com/roni/jugadores_list/',{ headers: headers }); // Reemplaza con la URL de tu API
              // Actualiza el estado de data con los datos de la API
             
             setData(response.data)
@@ -209,7 +210,7 @@ const MultipleTables = () => {
             
              
             //console.log('list'+JSON.stringify(response.data))
-            return equiposList
+            return jugadoresList
             //console.log(response)
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -230,6 +231,51 @@ const MultipleTables = () => {
             };
 
             const response = await axios.get('https://apis.dinossolutions.com/roni/torneos_list/',{ headers: headers }); // Reemplaza con la URL de tu API
+             // Actualiza el estado de data con los datos de la API
+             const tor_list = []
+             const tor_listForm = []
+
+             const torneos = response.data
+             
+             
+             for(let option=0; option < torneos.length; option++){
+                 const newOption = {value:torneos[option].id,label:torneos[option].nombre_torneo}
+                 const newOptionForm = {value:torneos[option].id,label:torneos[option].nombre_torneo}
+                 tor_list.push(newOption);
+                 tor_listForm.push(newOptionForm);
+             }
+            setDataTorneos(tor_list)    
+            setDataTorneosForm(tor_listForm)         
+            setTorneo(tor_list[0])
+            setTorneoForm(tor_listForm[0])
+            setInputSearch(tor_list[0].label)
+            
+            inputSearchRef.current.click()
+            setIsActive(false) 
+            //setSearchSelect(torneosList[0].value)
+            
+        } catch (error) { 
+            console.error('Error fetching data:', error);
+        }
+    };
+
+
+      //////////////////////////////////////OBTENER EQUIPOS///////////////////////////////////////////////////////
+
+      const getEquipos = async () => {
+        try {
+
+            let value = await  getToken();
+            //console.log("Token :" + value)
+            var headers = {
+                'Content-Type': 'application/json', // Tipo de contenido de la solicitud
+                'Authorization': 'Bearer ' + value, // Token de autorización, ajusta según tus necesidades
+                'Access-Control-Allow-Origin': "*"
+            };
+
+            var alpha_id = await getAlpha();
+
+            const response = await axios.get('https://apis.dinossolutions.com/roni/equipos/'+alpha_id+'/id_torneo',{ headers: headers }); // Reemplaza con la URL de tu API
              // Actualiza el estado de data con los datos de la API
              const tor_list = []
              const tor_listForm = []
@@ -261,7 +307,7 @@ const MultipleTables = () => {
 
     ///////////// AGREGAR/ACTUALIZAR TORNEOS/////////////////////////////////////////
 
-    const [modalTitle, setTitle] = useState('Nuevo Equipo')
+    const [modalTitle, setTitle] = useState('Nuevo Torneo')
 
     const [idEdit, setId] = useState('');
     const [imgEquipo, setImg] = useState('');
@@ -274,7 +320,7 @@ const MultipleTables = () => {
 
     const handleTorneoChange = (event: any) => {        
         setPage(1)
-        setSearchSelect(event.value)
+        setSearchSelect(event.label)
         //setInputSearch(event.value)
         setTorneo(event)   
         console.log(inputSearch)     
@@ -521,14 +567,14 @@ const MultipleTables = () => {
    
     useEffect(() => {
         //console.log('ejecuto dispatch')
-        dispatch(setPageTitle('Equipos'));
+        dispatch(setPageTitle('Jugadores'));
         //fetchData();
     });
 
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [5,10,15];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    /* const [initialRecords, setInitialRecords] = useState(equiposList);
+    /* const [initialRecords, setInitialRecords] = useState(jugadoresList);
     const [recordsData, setRecordsData] = useState(initialRecords);
  */
     const [search, setSearch] = useState('');
@@ -552,17 +598,23 @@ const MultipleTables = () => {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    //console.log(equiposList)
+    //console.log(jugadoresList)
 
     useEffect(() => {
         setInitialRecords(() => {
-            return equiposList.filter((item:any) => { 
+            return jugadoresList.filter((item:any) => { 
                 return (
                     //console.log(item.nombre_torneo)
                     item.nombre.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.liga_equipo.nombre_torneo.toLowerCase().includes(search.toLowerCase()) ||
-                    item.delegado.toLowerCase().includes(search.toLowerCase()) &&
-                    item.liga_equipo.nombre_torneo.toString().toLowerCase().includes(searchSelect.toLowerCase())  
+                    item.ap_p.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.ap_m.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.edad.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.expediente.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.seccional.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.direccion.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.telefono.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.equipo_jugador.nombre.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    item.equipo_jugador.liga_equipo.nombre_torneo.toLowerCase().includes(search.toLowerCase()) 
                     //item.estatus.toLowerCase().includes(search.toLowerCase()) 
                      
                 );
@@ -570,16 +622,23 @@ const MultipleTables = () => {
         });
        // console.log('initialRecords')
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search]);
+    }, [search]); 
 
     useEffect(() => {
         setInitialRecords(() => {
-            return equiposList.filter((item:any) => { 
+            return jugadoresList.filter((item:any) => { 
                 return (
                     //console.log(item.nombre_torneo)                    
                     item.nombre.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
-                    item.liga_equipo.nombre_torneo.toLowerCase().includes(searchSelect.toLowerCase()) ||
-                    item.delegado.toLowerCase().includes(searchSelect.toLowerCase()) 
+                    item.ap_p.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.ap_m.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.edad.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.expediente.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.seccional.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.direccion.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.telefono.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.equipo_jugador.nombre.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.equipo_jugador.liga_equipo.nombre_torneo.toLowerCase().includes(searchSelect.toLowerCase())  
                     //item.estatus.toLowerCase().includes(search.toLowerCase()) 
                      
                 );
@@ -587,11 +646,11 @@ const MultipleTables = () => {
         });
         //console.log('initialrecords2')
         //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchSelect]);
+    }, [searchSelect]); 
 
     useEffect(() => {
         //console.log('ordena columnas')
-        const data = sortBy(equiposList, sortStatus.columnAccessor);
+        const data = sortBy(jugadoresList, sortStatus.columnAccessor);
         setInitialRecords(sortStatus.direction === 'asc' ? data.reverse() : data);
         setPage(1);
         
@@ -609,7 +668,7 @@ const MultipleTables = () => {
                     </div>
                 {/* <!-- End spinner -->     */}
                 <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
-                    <h1 className="font-semibold text-lg dark:text-white-light">Equipos</h1>
+                    <h1 className="font-semibold text-lg dark:text-white-light">Jugadores</h1>
                     <button onClick={() => setModal9(true)} type="button" className="btn btn-success w-10 h-10 p-0 rounded-full">
                         <IconPlus className="w-6 h-6" />
                     </button>
@@ -629,21 +688,56 @@ const MultipleTables = () => {
                         records={recordsData}                        
                         columns={[
                             {
-                                accessor: 'nombre',
-                                title: 'Equipo',
-                                titleClassName: '!text-center',
+                                accessor: 'img',
+                                title: 'Foto',
+                                cellsClassName: 'text-center',
                                 sortable: true,
-                                render: ({nombre,img_equipo}) => (
+                                render: ({img}) => (
                                     <div className="flex items-center w-max">                                
                                         
-                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img_equipo} alt="" />
+                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img} alt="" />
                                         {/* <div dangerouslySetInnerHTML={{ __html: img }}/> */}
-                                        <div>{nombre} </div>
+                                        {/* <div>{nombre+' '+ap_p+' '+ap_m}</div> */}
+                                    </div>
+                                ),
+                            }, 
+                            {
+                                accessor: 'nombre',
+                                title: 'Jugador',
+                                cellsClassName: 'text-center text-lowercase flex',
+                                sortable: true,
+                                render: ({nombre,ap_p,ap_m,img}) => (
+                                    <div className="flex items-center w-max">                                
+                                        
+                                        {/* <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img} alt="" /> */}
+                                        {/* <div dangerouslySetInnerHTML={{ __html: img }}/> */}
+                                        <div>{nombre+' '+ap_p+' '+ap_m}</div>
                                     </div>
                                 ),
                             },  
-                            { accessor: 'liga_equipo.nombre_torneo', title: 'Liga',titleClassName: '!text-center', sortable: true },     
-                            { accessor: 'delegado', title: 'Delegado',titleClassName: '!text-center', sortable: true },       
+                            { accessor: 'edad', title: 'Edad',cellsClassName: 'text-center', sortable: true },    
+                            { accessor: 'equipo_jugador.liga_equipo.nombre_torneo', title: 'Liga',titleClassName: '!text-center', sortable: true },   
+                            { accessor: 'equipo_jugador.nombre', title: 'Equipo',titleClassName: '!text-center', sortable: true },                 
+                            { accessor: 'expediente', title: 'Expediente',titleClassName: '!text-center', sortable: true }, 
+                            { accessor: 'seccional', title: 'Seccional',titleClassName: '!text-center', sortable: true },     
+                            { accessor: 'direccion', title: 'Domicilio',titleClassName: '!text-center', sortable: true },            
+                            { accessor: 'telefono', title: 'Telefono',titleClassName: '!text-center', sortable: true }, 
+                            { accessor: 'delegado',
+                              title: 'Delegado',
+                              titleClassName: '!text-center',
+                              sortable: true,
+                              render: ({delegado}) => (  
+                                
+                                
+                                                             
+                                <div className={`${delegado === true ? 'text-success bg-success-light' : 'text-danger bg-danger-light'} flex items-center w-max`}>                           
+                                    <div>
+                                        <span className={`badge badge-outline-${delegado === true ? 'success' : 'danger'} `}>{delegado === true ? 'Si' : 'No'}</span>
+                                    </div>
+                                </div>
+                             ),  
+                            
+                            }, 
                             { accessor: 'estatus',
                               title: 'Estatus',
                               titleClassName: '!text-center',

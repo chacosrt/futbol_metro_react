@@ -41,29 +41,32 @@ const MultipleTables = () => {
     const [initialRecords, setInitialRecords] = useState(torneosList);
     const [recordsData, setRecordsData] = useState(initialRecords);
     const [modal9, setModal9] = useState(false);
+    const [options,setOptions] = useState([])
+    const [options2,setOptions2] = useState([])
+    const [options4,setOptions4] = useState([])
     
     const defaultFile = "/assets/images/users/multi-user.jpg"
 
-    const options = [
+    /* const options = [
         { value: 'Copa', label: 'Copa' },
         { value: 'Liga', label: 'Liga' },
-    ];
+    ]; */
 
-    const options2 = [        
+    /* const options2 = [        
         { value: 'Martes', label: 'Martes' },
         { value: 'Miercoles', label: 'Miercoles' },
         { value: 'Jueves', label: 'Jueves' },
         { value: 'Viernes', label: 'Viernes' },
         { value: 'Sabado', label: 'Sabado' },
         { value: 'Domingo', label: 'Domingo' },
-    ];
+    ]; */
 
     const [options3, setOption] = useState([]);
 
-    const options4 = [
+    /* const options4 = [
         { value: 'Veteranos', label: 'Veteranos' },
         { value: 'Libre', label: 'Libre' },
-    ];
+    ]; */
 
     useEffect(() => {
         fetchData();
@@ -212,8 +215,31 @@ const MultipleTables = () => {
             setIsActive(false)           
             setInitialRecords(response.data)
             setRecordsData(response.data)
+
+            setOptions([
+                { value: 'Copa', label: 'Copa' },
+                { value: 'Liga', label: 'Liga' },
+            ]);
+
+            setMod({ value: 'Liga', label: 'Liga' })
+
+            setOptions2([        
+                { value: 'Martes', label: 'Martes' },
+                { value: 'Miercoles', label: 'Miercoles' },
+                { value: 'Jueves', label: 'Jueves' },
+                { value: 'Viernes', label: 'Viernes' },
+                { value: 'Sabado', label: 'Sabado' },
+                { value: 'Domingo', label: 'Domingo' },
+            ]);
+
+            setOptions4([
+                { value: 'Veteranos', label: 'Veteranos' },
+                { value: 'Libre', label: 'Libre' },
+            ]);
+
+            setCat({ value: 'Libre', label: 'Libre' })
            // console.log('list'+torneosList)
-            return torneosList
+            //return torneosList
             //console.log(response)
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -230,13 +256,13 @@ const MultipleTables = () => {
 
     const [name, setName] = useState('');
     const [lugar, setlugar] = useState('');
-    const [mod, setMod] = useState('Liga');
+    const [mod, setMod] = useState(null);
     const [temp, setTemp] = useState('');
     const [dias, setDias] = useState('');
     const [horarios, setHorarios] = useState('');
     const [fecha_in, setFechaIn] = useState<any>('2024-01-01');
     const [fecha_fin, setFechaFin] = useState<any>('2024-01-01');
-    const [cat, setCat] = useState('Libre');
+    const [cat, setCat] = useState(null);
     const imgRef = useRef(null);
 
     const handleNameChange = (event: any) => {
@@ -250,7 +276,7 @@ const MultipleTables = () => {
     };
 
     const handleModChange = (event: any) => {        
-        setMod(event.value);
+        setMod(event);
         
     };
 
@@ -298,7 +324,7 @@ const MultipleTables = () => {
     };
 
     const handleCatChange = (event: any) => {
-        setCat(event.value);
+        setCat(event);
         
     };
 
@@ -357,13 +383,13 @@ const MultipleTables = () => {
 
                 setName(datos.nombre_torneo);
                 setlugar(datos.lugar);
-                setMod(datos.modalidad);
+                setMod({value:datos.modalidad,label:datos.modalidad});
                 setTemp(datos.temporada);
                 setDias(datos.dias);
                 setHorarios(datos.horarios);
                 setFechaIn(datos.fecha_inicio);
                 setFechaFin(datos.fecha_fin);
-                setCat(datos.categoria);    
+                setCat({value:datos.categoria,label:datos.categoria});    
                 setListDias(dias_list);
                 setListHoras(hour_list);
                 setImg(datos.img)     
@@ -388,13 +414,13 @@ const MultipleTables = () => {
         setImg('');
         setName('');
         setlugar('');
-        setMod('Liga');
+        setMod(options[1]);
         setTemp('');
         setDias('');
         setHorarios('');
         setFechaIn('2024-01-01');
         setFechaFin('2024-01-01');
-        setCat('');
+        setCat(options4[1]);
         setListDias([]);
         setListHoras([]);
       };
@@ -413,24 +439,24 @@ const MultipleTables = () => {
 
         formData.append('name', name);
         formData.append('lugar', lugar);
-        formData.append('mod', mod);
+        formData.append('mod', mod.value);
         formData.append('temp', temp);
         formData.append('dias', dias);
         formData.append('horarios', horarios);
         formData.append('fecha_in', fecha_in);
         formData.append('fecha_fin', fecha_fin);
-        formData.append('cat', cat);
+        formData.append('cat', cat.value);
 
         const data_torneo = {
             nombre_torneo: name,
             temporada:temp,
-            modalidad: mod,
+            modalidad: mod.value,
             lugar: lugar,
             dias: dias,
             horarios: horarios,
             fecha_inicio: fecha_in,
             fecha_fin: fecha_fin,
-            categoria: cat,
+            categoria: cat.value,
             img: imgTorneo
         };
 
@@ -731,7 +757,7 @@ const MultipleTables = () => {
                                                 </div>
                                                 <div>
                                                     <label htmlFor="mod">Modalidad</label>
-                                                    <Select onChange={handleModChange} defaultValue={options[1]} options={options} isSearchable={false} id="mod" name="mod"/>
+                                                    <Select onChange={handleModChange} value={mod} options={options} isSearchable={false} id="mod" name="mod"/>
                                                 </div>
                                                 <div>
                                                     <label htmlFor="dias">Dias</label>
@@ -753,7 +779,7 @@ const MultipleTables = () => {
                                                 </div>   
                                                 <div>
                                                     <label htmlFor="cat">Categoria</label>
-                                                    <Select onChange={handleCatChange} defaultValue={options4[1]} options={options4} isSearchable={false} id="cat" name="cat"/>
+                                                    <Select onChange={handleCatChange} value={cat} options={options4} isSearchable={false} id="cat" name="cat"/>
                                                 </div>                                          
                                             </div>
                                             <div className="mt-8 flex items-center justify-end">
