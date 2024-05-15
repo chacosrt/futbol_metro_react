@@ -122,6 +122,15 @@ const Sidebar = () => {
                                 </button>                                   
                             </li> 
 
+                            <li className="menu nav-item">
+                                <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`}>
+                                    <div className="flex items-center">                                        
+                                        <img src="/assets/images_metro/icons/partidos.png" width={25} height={20} alt="Logo" className="navbar-logo" />
+                                        <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark"><NavLink to="/partidos">{t('Partidos/Resultados')}</NavLink></span>
+                                    </div>                            
+                                </button>                                   
+                            </li> 
+
                             {/************************************************************************************** */}
                             
                             <li className="menu nav-item">

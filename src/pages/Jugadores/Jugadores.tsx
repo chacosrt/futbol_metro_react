@@ -23,6 +23,7 @@ import IconPlus from '../../components/Icon/IconPlus';
 import IconX from '../../components/Icon/IconX';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
+import IconMinus from '../../components/Icon/IconMinus';
 import { IRootState } from '../../store';
 import IconTrendingUp from '../../components/Icon/IconTrendingUp';
 
@@ -44,6 +45,7 @@ const MultipleTables = () => {
     const [jugadoresList, setData] = useState([]);
     const [torneosList, setDataTorneos] = useState([]);
     const [torneosListForm, setDataTorneosForm] = useState([]);
+    const [equiposListForm, setDataEquipossForm] = useState([]);
     const [initialRecords, setInitialRecords] = useState(jugadoresList);
     const [recordsData, setRecordsData] = useState(initialRecords);
     const [modal9, setModal9] = useState(false);
@@ -60,7 +62,7 @@ const MultipleTables = () => {
     useEffect(() => {
         console.log('se ejecuta primero')
         fetchData();
-        
+        //getEquipos();
         //listaHoras();       
        
         //setSearchSelect(torneo)
@@ -78,6 +80,10 @@ const MultipleTables = () => {
         
         console.log('aplica filtro' +inputSearch)
         setSearchSelect(inputSearch)
+        if (inputSearch != ""){
+            setIsActive(false) 
+        }
+        
     };
 
 
@@ -157,7 +163,42 @@ const MultipleTables = () => {
                 'Authorization': 'Bearer ' + value, // Token de autorización, ajusta según tus necesidades
                 'Access-Control-Allow-Origin': "*"
             };
-            const response = await axios.get('https://apis.dinossolutions.com/roni/admin/'+idEdit+'/alpha_id',{headers:headers});
+            
+            var url = 'https://apis.dinossolutions.com/roni/admin/'+idEdit+'/alpha_id'
+               
+            
+            const response = await axios.get(url,{headers:headers});
+
+            if(response.status === 200) {      
+        
+                var alpha_id = response.data["alpha_id"]
+               // console.log("Token_resp: "+token_resp)
+                return alpha_id;             
+    
+            } 
+        }catch (error) {
+            console.error('Error fetching data:', error);
+        }
+
+        
+    }
+
+    ////////////////////////ALPHA CON ID/////////////////////////////////////////////////////
+
+    const getAlphaId = async (id:any) => {
+
+        try{
+            let value = await  getToken();
+            var headers = {
+                'Content-Type': 'application/json', // Tipo de contenido de la solicitud
+                'Authorization': 'Bearer ' + value, // Token de autorización, ajusta según tus necesidades
+                'Access-Control-Allow-Origin': "*"
+            };
+            
+            var url = 'https://apis.dinossolutions.com/roni/admin/'+id+'/alpha_id'
+                
+            
+            const response = await axios.get(url,{headers:headers});
 
             if(response.status === 200) {      
         
@@ -196,19 +237,23 @@ const MultipleTables = () => {
             setOptions([{ value: '1', label: 'Activo' },{ value: '2', label: 'Baja' }])
             setEstatus({ value: '1', label: 'Activo' })
 
-
+            
             if(torneosList.length == 0){
                 getTorneos();
+                
             }
             else{
-                setPage(1);               
-                
-                inputSearchRef.current.click()
-                setTorneo(torneosList[0])
-                setIsActive(false) 
+                //setPage(1);               
+                               
+                //setTorneo(torneosList[0])
+                //inputSearchRef.current.click()
+                //setIsActive(false) 
             }
-            
-             
+            //handleTorneoChange(torneo)
+
+            /* setPage(1)
+            setSearchSelect(torneo.label) */
+            //aplyFilter()
             //console.log('list'+JSON.stringify(response.data))
             return jugadoresList
             //console.log(response)
@@ -251,9 +296,10 @@ const MultipleTables = () => {
             setInputSearch(tor_list[0].label)
             
             inputSearchRef.current.click()
-            setIsActive(false) 
-            //setSearchSelect(torneosList[0].value)
             
+            getEquipos(tor_list[0].value)
+            //setSearchSelect(torneosList[0].value)
+            //setIsActive(false) 
         } catch (error) { 
             console.error('Error fetching data:', error);
         }
@@ -262,7 +308,7 @@ const MultipleTables = () => {
 
       //////////////////////////////////////OBTENER EQUIPOS///////////////////////////////////////////////////////
 
-      const getEquipos = async () => {
+      const getEquipos = async (id:any) => {
         try {
 
             let value = await  getToken();
@@ -273,30 +319,30 @@ const MultipleTables = () => {
                 'Access-Control-Allow-Origin': "*"
             };
 
-            var alpha_id = await getAlpha();
+            var alpha_id = await getAlphaId(id);
 
             const response = await axios.get('https://apis.dinossolutions.com/roni/equipos/'+alpha_id+'/id_torneo',{ headers: headers }); // Reemplaza con la URL de tu API
              // Actualiza el estado de data con los datos de la API
-             const tor_list = []
-             const tor_listForm = []
+             const eq_list = []
+             const eq_listForm = []
 
-             const torneos = response.data
+             const equipos = response.data
              
              
-             for(let option=0; option < torneos.length; option++){
-                 const newOption = {value:torneos[option].nombre_torneo,label:torneos[option].nombre_torneo}
-                 const newOptionForm = {value:torneos[option].id,label:torneos[option].nombre_torneo}
-                 tor_list.push(newOption);
-                 tor_listForm.push(newOptionForm);
+             for(let option=0; option < equipos.length; option++){
+                 const newOption = {value:equipos[option].nombre,label:equipos[option].nombre}
+                 const newOptionForm = {value:equipos[option].id,label:equipos[option].nombre}
+                 eq_list.push(newOption);
+                 eq_listForm.push(newOptionForm);
              }
-            setDataTorneos(tor_list)    
-            setDataTorneosForm(tor_listForm)         
-            setTorneo(tor_list[0])
-            setTorneoForm(tor_listForm[0])
-            setInputSearch(tor_list[0].value)
+            //setDataTorneos(eq_list)    
+            setDataEquipossForm(eq_listForm)         
+            setEquipo(eq_listForm[0])
+            //setTorneoForm(eq_listForm[0])
+            //setInputSearch(eq_list[0].value)
             
-            inputSearchRef.current.click()
-            setIsActive(false) 
+            //inputSearchRef.current.click()
+            //setIsActive(false) 
             //setSearchSelect(torneosList[0].value)
             
         } catch (error) { 
@@ -307,13 +353,22 @@ const MultipleTables = () => {
 
     ///////////// AGREGAR/ACTUALIZAR TORNEOS/////////////////////////////////////////
 
-    const [modalTitle, setTitle] = useState('Nuevo Torneo')
+    const [modalTitle, setTitle] = useState('Nuevo Jugador')
 
     const [idEdit, setId] = useState('');
-    const [imgEquipo, setImg] = useState('');
+    const [imgJugador, setImg] = useState('');
 
     const [name, setName] = useState('');
-    const [delegado, setDelegado] = useState('');
+    const [app, setApp] = useState('');
+    const [apm, setApm] = useState('');
+    const [edad, setEdad] = useState<any>(0);
+    const [liga, setLiga] = useState('');
+    const [equipo, setEquipo] = useState(null);
+    const [expediente, setExp] = useState('');
+    const [seccional, setSecc] = useState('');
+    const [domicilio, setDomicilio] = useState('');
+    const [telefono, setTel] = useState('');
+    const [delegado, setDelegado] = useState(null);
     const [estatus, setEstatus] = useState(null);
     
     const imgRef = useRef(null); 
@@ -329,9 +384,10 @@ const MultipleTables = () => {
 
     const handleTorneoFormChange = (event: any) => {        
         
-        setTorneoForm(event)   
+        setTorneoForm(event) 
+        //setId(event.value)  
         console.log(event)     
-        
+        getEquipos(event.value)
     };
     
 
@@ -340,8 +396,52 @@ const MultipleTables = () => {
         
     };
 
+    const handleAppChange = (event: any) => {
+        setApp(event.target.value);
+        
+    };
+
+    const handleApmChange = (event: any) => {
+        setApm(event.target.value);
+        
+    };
+
+    const handleEdadChange = (event: any) => {
+        console.log(event)
+        setEdad(event.target.value);
+        
+    };
+
+
+    const handleEquipoChange = (event: any) => {
+        console.log(event)
+        setEquipo(event);
+        
+    };
+
+    const handleExpChange = (event: any) => {
+        setExp(event.target.value);
+        
+    };
+
+    const handleSeccChange = (event: any) => {
+        setSecc(event.target.value);
+        
+    };
+
+    const handleDomicilioChange = (event: any) => {
+        setDomicilio(event.target.value);
+        
+    };
+
+    const handleTelChange = (event: any) => {
+        setTel(event.target.value);
+        
+    };
+
     const handleDelegadoChange = (event: any) => {
-        setDelegado(event.target.value);
+        console.log(event.target.checked)
+        setDelegado(event.target.checked);
         
     };
 
@@ -361,7 +461,7 @@ const MultipleTables = () => {
         setModal9(true); 
 
 
-        setTitle('Editar Equipo')
+        setTitle('Editar Jugador')
         console.log(idEdit)
         var token = await getToken()
 
@@ -376,7 +476,7 @@ const MultipleTables = () => {
         var alpha_id = resp.data["alpha_id"]
         
 
-        var url = 'https://apis.dinossolutions.com/roni/equipos' + '/' + alpha_id +'/id';
+        var url = 'https://apis.dinossolutions.com/roni/jugadores' + '/' + alpha_id +'/id';
 
         try {
             const response = await axios.get(url,{headers:headers});
@@ -387,7 +487,7 @@ const MultipleTables = () => {
                 var datos = response.data              
         
                 const image = myElementRef?.current;
-                image.src = datos.img_equipo
+                image.src = datos.img
                 let est = datos.estatus.toString()
                 
                 if(est == '1'){
@@ -397,10 +497,18 @@ const MultipleTables = () => {
                 }
 
                 setName(datos.nombre);
-                setTorneoForm({label:datos.liga_equipo.nombre_torneo,value:datos.liga});
+                setApp(datos.ap_p);
+                setApm(datos.ap_m);
+                setEdad(datos.edad)
+                setTorneoForm({label:datos.equipo_jugador.liga_equipo.nombre_torneo,value:datos.liga});
+                setEquipo({label:datos.equipo_jugador.nombre,value:datos.equipo});
+                setExp(datos.expediente)
+                setSecc(datos.seccional)
+                setDomicilio(datos.direccion)
+                setTel(datos.telefono)
                 setDelegado(datos.delegado);
                               
-                setImg(datos.img_equipo)  
+                setImg(datos.img)  
 
             } 
             else { toastr.error(response.statusText, '¡Upss!'); }
@@ -421,8 +529,16 @@ const MultipleTables = () => {
         setId('');
         setImg('');
         setName('');
+        setApp('');
+        setApm('');
+        setExp('');
+        setSecc('');
+        setTel('');
+        setDomicilio('');
+        setEdad(0);
         setTorneoForm(torneosList[0])
-        setDelegado('')
+        getEquipos(torneosList[0].value)
+        setDelegado(false)
         setEstatus('1')
       };
 
@@ -439,16 +555,40 @@ const MultipleTables = () => {
         const formData = new FormData();
 
         formData.append('name', name);
-        formData.append('liga', torneo);
-        formData.append('delegado', delegado);
+        formData.append('app', app);
+        formData.append('apm', apm);
+        formData.append('edad', edad);
+        formData.append('liga', torneoForm);
+        formData.append('equipo', equipo);
+        formData.append('exp', expediente);
+        formData.append('secc', seccional);
+        formData.append('dom', domicilio);
+        formData.append('tel', telefono);
         formData.append('estatus', estatus.value);
+
+        var del = false
+
+        if(delegado != null){
+
+            del = delegado
+        }
         
-        const data_equipo = {
+        const data_jugador = {
             nombre: name,
-            liga:torneoForm.value,
-            delegado: delegado,
+            ap_p: app,
+            ap_m: apm,
+            edad:parseInt(edad),
+            liga: torneoForm.value,
+            equipo: equipo.value,
+            dorsal: 0,
+            expediente:expediente,
+            seccional: seccional,
+            direccion: domicilio,
+            telefono: telefono,
+            img: imgJugador,            
+            delegado: del,
             estatus: parseInt(estatus.value),           
-            img_equipo: imgEquipo
+            
         };
 
         var token = await getToken()
@@ -464,15 +604,15 @@ const MultipleTables = () => {
 
         if (idEdit != ''){
             var alpha_id = await getAlpha();
-            url = 'https://apis.dinossolutions.com/roni/equipos' + '/' + alpha_id;
-            text = 'Tu equipo se edito correctamente';
+            url = 'https://apis.dinossolutions.com/roni/jugadores' + '/' + alpha_id;
+            text = 'El jugador se edito correctamente';
         }else{
-            url = 'https://apis.dinossolutions.com/roni/equipos/';
-            text = 'Tu equipo se creo correctamente';
+            url = 'https://apis.dinossolutions.com/roni/jugadores/';
+            text = 'El jugador se creo correctamente';
         }
     
         try {
-            const response = await axios.post(url,data_equipo,{headers:headers});
+            const response = await axios.post(url,data_jugador,{headers:headers});
             console.log('Respuesta del servidor:', response.data);
             // Aquí puedes manejar la respuesta del servidor, como actualizar el estado de tu componente.
             if(response.status == 201) {    
@@ -493,6 +633,8 @@ const MultipleTables = () => {
                
             } 
             else { toastr.error(response.statusText, '¡Upss!'); }
+
+            window.location.reload();
             
           } catch (error) {
             console.error(error); 
@@ -513,7 +655,7 @@ const MultipleTables = () => {
         });
         swalWithBootstrapButtons
             .fire({
-                title: 'Deseas eliminar este Equipo?',
+                title: 'Deseas eliminar este Jugador?',
                 text: "No se podrá revertir esta acción!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -538,7 +680,7 @@ const MultipleTables = () => {
                    var alpha_id = resp.data["alpha_id"]
                     
             
-                    var url = 'https://apis.dinossolutions.com/roni/equipos/' + alpha_id +'/delete';
+                    var url = 'https://apis.dinossolutions.com/roni/jugadores/' + alpha_id +'/delete';
 
                     try {
                         const response = await axios.post(url,{id:alpha_id},{headers:headers});
@@ -546,17 +688,18 @@ const MultipleTables = () => {
                         // Aquí puedes manejar la respuesta del servidor, como actualizar el estado de tu componente.
                         if(response.status == 202) {  
                             setIsActive(true)
-                            swalWithBootstrapButtons.fire('Eliminado!', 'El equipo se elimino.', 'success');
-                            fetchData() 
+                            swalWithBootstrapButtons.fire('Eliminado!', 'El jugador se elimino.', 'success');
+                            //fetchData() 
                             
                         }
+                        window.location.reload();
                     }catch (error) {
                         console.error(error); 
                     } 
             
                     
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire('Cancelado', 'El equipo no se elimino', 'error');
+                    swalWithBootstrapButtons.fire('Cancelado', 'El jugador no se elimino', 'error');
                 }
             });
 
@@ -677,7 +820,7 @@ const MultipleTables = () => {
                     </div>
                     <div className="ltr:ml-auto rtl:mr-auto">
                         <input type="text" className="form-input w-auto" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                        <input type="text" className="form-input w-auto" placeholder="Buscar..." value={inputSearch} ref={inputSearchRef} id="input_search" onClick={aplyFilter} hidden/>
+                        <input type="text" className="form-input w-auto" placeholder="Buscar..." value={inputSearch} ref={inputSearchRef} id="input_search" onClick={aplyFilter} hidden />
 
                     </div>
                 </div>
@@ -830,18 +973,75 @@ const MultipleTables = () => {
                                                     <label htmlFor="name">Nombre</label>
                                                     <input value={name} onChange={handleNameChange} id="name" name="name" type="text" placeholder="Escriba nombre" className="form-input" />
                                                 </div>
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="name">Apellido Paterno</label>
+                                                    <input value={app} onChange={handleAppChange} id="app" name="app" type="text" placeholder="Escriba apellido paterno" className="form-input" />
+                                                </div>
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="name">Apellido Materno</label>
+                                                    <input value={apm} onChange={handleApmChange} id="apm" name="apm" type="text" placeholder="Escriba apellido materno" className="form-input" />
+                                                </div>
+
+                                                {/* Input NUmber */}
+                                                <div className="mb-1">
+                                                    <div className="mb-1">
+                                                        <label htmlFor="edad">Edad</label>
+                                                        <div className="inline-flex">                                                            
+                                                            <button
+                                                                type="button"
+                                                                className="bg-primary text-white flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border border-r-0 border-primary"
+                                                                onClick={() => setEdad(edad > 0 ? edad - 1 : 0)}
+                                                            >
+                                                                <IconMinus className="w-5 h-5" />
+                                                            </button>
+                                                            <input type="number" onChange={handleEdadChange} placeholder="55" className="form-input rounded-none text-center" id="edad" name="edad" min="0" max="60" value={edad} />
+                                                            <button
+                                                                type="button"
+                                                                className="bg-primary text-white flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border border-l-0 border-primary"
+                                                                onClick={() => setEdad(edad < 60 ? edad + 1 : 60)}
+                                                            >
+                                                                <IconPlus />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* End input number */}
                                                 <div>
                                                     <label htmlFor="liga">Liga</label>
                                                     <Select onChange={(e) => handleTorneoFormChange(e)}  className='z-[999] col-lg-2' placeholder="select-filtro" value={torneoForm} options={torneosListForm} isSearchable={false} id="liga" name="liga"/>
                                                 </div>
                                                 <div>
+                                                    <label htmlFor="liga">Equipo</label>
+                                                    <Select onChange={(e) => handleEquipoChange(e)}  className='z-[999] col-lg-2' placeholder="select-filtro" value={equipo} options={equiposListForm} isSearchable={false} id="liga" name="liga"/>
+                                                </div>
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="exp">Expediente</label>
+                                                    <input value={expediente} onChange={handleExpChange} id="exp" name="exp" type="text" placeholder="Escriba expediente" className="form-input" />
+                                                </div>
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="secc">Seccional</label>
+                                                    <input value={seccional} onChange={handleSeccChange} id="secc" name="secc" type="text" placeholder="Escriba seccional" className="form-input" />
+                                                </div>
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="tel">Telefono</label>
+                                                    <input value={telefono} onChange={handleTelChange} id="tel" name="tel" type="text" placeholder="Escriba telefono" className="form-input" />
+                                                </div>
+                                                <div>
                                                     <label htmlFor="delegado">Delegado</label>
-                                                    <input value={delegado} onChange={handleDelegadoChange} id="delegado" name="delegado" type="text" placeholder="Nombre del delegado" className="form-input" />
+                                                    <label className="w-12 h-6 relative">
+                                                        <input type="checkbox" checked={delegado} onChange={(e) => handleDelegadoChange(e)} id="delegado" name="delegado" className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" />
+                                                        <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                                                    </label>                                                    
                                                 </div>
                                                 <div>
                                                     <label htmlFor="estatus">Estatus</label>
                                                     <Select onChange={(e) => handleEstatusChange(e)} value={estatus}  options={options} isSearchable={false} id="estatus" name="estatus"/>
-                                                </div>                                                                                         
+                                                </div>   
+                                                <div className='col-lg-6'>
+                                                    <label htmlFor="tel">Domicilio</label>
+                                                    <textarea rows={4} value={domicilio} onChange={handleDomicilioChange} id="dom" name="dom" className="form-textarea ltr:rounded-l-none rtl:rounded-r-none"></textarea>
+                                                    
+                                                </div>                                                                                      
                                             </div>
                                             <div className="mt-8 flex items-center justify-end">
                                                 <button onClick={() => closeModal()} type="button" className="btn btn-outline-danger">

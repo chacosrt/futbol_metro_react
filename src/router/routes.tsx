@@ -5,6 +5,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard/Dashboard'));
 const Torneos = lazy(() => import('../pages/Torneos/Torneos'));
 const Equipos = lazy(() => import('../pages/Equipos/Equipos'));
 const Jugadores = lazy(() => import('../pages/Jugadores/Jugadores'));
+const Partidos = lazy(() => import('../pages/Partidos/Partidos'));
 
 /**************************************************************************************************************** */
 const Sales = lazy(() => import('../pages/Sales'));
@@ -129,6 +130,10 @@ const routes = [
     {
         path: '/jugadores',
         element: <Jugadores />,
+    },
+    {
+        path: '/partidos',
+        element: <Partidos />,
     },
     // {
     //     path: '/index',
