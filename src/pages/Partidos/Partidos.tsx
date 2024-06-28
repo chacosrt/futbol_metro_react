@@ -42,11 +42,11 @@ const MultipleTables = () => {
 
     const [inputSearch,setInputSearch] = useState('')
 
-    const [jugadoresList, setData] = useState([]);
+    const [partidosList, setData] = useState([]);
     const [torneosList, setDataTorneos] = useState([]);
     const [torneosListForm, setDataTorneosForm] = useState([]);
     const [equiposListForm, setDataEquipossForm] = useState([]);
-    const [initialRecords, setInitialRecords] = useState(jugadoresList);
+    const [initialRecords, setInitialRecords] = useState(partidosList);
     const [recordsData, setRecordsData] = useState(initialRecords);
     const [modal9, setModal9] = useState(false);
     
@@ -255,7 +255,7 @@ const MultipleTables = () => {
             setSearchSelect(torneo.label) */
             //aplyFilter()
             //console.log('list'+JSON.stringify(response.data))
-            return jugadoresList
+            return partidosList
             //console.log(response)
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -717,7 +717,7 @@ const MultipleTables = () => {
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [5,10,15];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    /* const [initialRecords, setInitialRecords] = useState(jugadoresList);
+    /* const [initialRecords, setInitialRecords] = useState(partidosList);
     const [recordsData, setRecordsData] = useState(initialRecords);
  */
     const [search, setSearch] = useState('');
@@ -741,23 +741,25 @@ const MultipleTables = () => {
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
-    //console.log(jugadoresList)
+    //console.log(partidosList)
 
     useEffect(() => {
         setInitialRecords(() => {
-            return jugadoresList.filter((item:any) => { 
+            return partidosList.filter((item:any) => { 
                 return (
                     //console.log(item.nombre_torneo)
-                    item.nombre.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.ap_p.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.ap_m.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.edad.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.expediente.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.seccional.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.direccion.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.telefono.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.equipo_jugador.nombre.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    item.equipo_jugador.liga_equipo.nombre_torneo.toLowerCase().includes(search.toLowerCase()) 
+                    item.horario.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.etapa_descripcion.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.jornada.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.campo.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.liga_partido.nombre_torneo.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.nombre_local.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.nombre_visitante.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.temporada.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.ganador_descripcion.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.observaciones.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.estatus.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
+                    item.ganador.toString().toLowerCase().includes(searchSelect.toLowerCase())  
                     //item.estatus.toLowerCase().includes(search.toLowerCase()) 
                      
                 );
@@ -769,7 +771,7 @@ const MultipleTables = () => {
 
     useEffect(() => {
         setInitialRecords(() => {
-            return jugadoresList.filter((item:any) => { 
+            return partidosList.filter((item:any) => { 
                 return (
                     //console.log(item.nombre_torneo)                    
                     item.fecha.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
@@ -784,7 +786,7 @@ const MultipleTables = () => {
                     item.ganador_descripcion.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
                     item.observaciones.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
                     item.estatus.toString().toLowerCase().includes(searchSelect.toLowerCase()) ||
-                    item.equipo_jugador.ganador.toLowerCase().includes(searchSelect.toLowerCase())  
+                    item.ganador.toString().toLowerCase().includes(searchSelect.toLowerCase())  
                     //item.estatus.toLowerCase().includes(search.toLowerCase()) 
                      
                 );
@@ -796,7 +798,7 @@ const MultipleTables = () => {
 
     useEffect(() => {
         //console.log('ordena columnas')
-        const data = sortBy(jugadoresList, sortStatus.columnAccessor);
+        const data = sortBy(partidosList, sortStatus.columnAccessor);
         setInitialRecords(sortStatus.direction === 'asc' ? data.reverse() : data);
         setPage(1);
         
@@ -850,7 +852,8 @@ const MultipleTables = () => {
                             {
                                 accessor: 'fecha',
                                 title: 'Fecha',
-                                cellsClassName: 'text-center text-lowercase flex',
+                                cellsClassName: 'text-center',
+                                titleClassName: 'text-center',
                                 sortable: true,
                                 //render: ({nombre,ap_p,ap_m,img}) => (
                                 //    <div className="flex items-center w-max">                                
@@ -863,58 +866,55 @@ const MultipleTables = () => {
                             },  
                             { accessor: 'horario', title: 'Horario',cellsClassName: 'text-center', sortable: true },   
                             { accessor: 'etapa_descripcion', title: 'Etapa',cellsClassName: 'text-center', sortable: true }, 
-                            { accessor: 'jornada', title: 'Jornada',titleClassName: '!text-center', sortable: true },   
-                            { accessor: 'campo', title: 'Campo',titleClassName: '!text-center', sortable: true },                 
-                            { accessor: 'liga_partido.nombre_torneo', title: 'Liga',titleClassName: '!text-center', sortable: true }, 
+                            { accessor: 'jornada', title: 'Jornada',cellsClassName: 'text-center', sortable: true },   
+                            { accessor: 'campo', title: 'Campo',cellsClassName: '!text-center', sortable: true },                 
+                            { accessor: 'liga_partido.nombre_torneo', title: 'Liga',titleClassName: 'text-center',cellsClassName: 'text-center', sortable: true }, 
                             {
                                 accessor: 'nombre_local',
                                 title: 'Local',
-                                cellsClassName: 'text-center text-lowercase flex',
+                                cellsClassName: 'text-center !text-lowercase',
                                 sortable: true,
                                 render: ({nombre_local,img_local}) => (
-                                    <div className="flex items-center w-max">                                
-                                        
-                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img_local} alt="" /> 
-                                        {/* <div dangerouslySetInnerHTML={{ __html: img }}/> */}
-                                        <div>{nombre_local}</div>
+                                    <div className='flex items-center md-2 w-max'>
+                                        <img className="w-9 h-9 rounded-full ltr:mr-2 rtl:ml-2 object-cover" src={img_local} alt="" />
+                                        <p>{nombre_local}</p>
                                     </div>
+                                    
                                 ),
-                            },  
-                            { accessor: 'seccional', title: 'Seccional',titleClassName: '!text-center', sortable: true },     
-                            { accessor: 'direccion', title: 'Domicilio',titleClassName: '!text-center', sortable: true },            
-                            { accessor: 'telefono', title: 'Telefono',titleClassName: '!text-center', sortable: true }, 
-                            { accessor: 'delegado',
-                              title: 'Delegado',
+                            },                               
+                            { accessor: 'estatus',
+                              title: '-',
                               titleClassName: '!text-center',
                               sortable: true,
-                              render: ({delegado}) => (  
+                              render: ({estatus,goles_local,goles_visitante}) => (  
                                 
                                 
                                                              
-                                <div className={`${delegado === true ? 'text-success bg-success-light' : 'text-danger bg-danger-light'} flex items-center w-max`}>                           
+                                <div >                           
                                     <div>
-                                        <span className={`badge badge-outline-${delegado === true ? 'success' : 'danger'} `}>{delegado === true ? 'Si' : 'No'}</span>
+                                        <span>{estatus === 1 ? 'VS': estatus === 2 ? goles_local + ' - ' + goles_visitante :'-'}</span>
                                     </div>
                                 </div>
                              ),  
                             
                             }, 
-                            { accessor: 'estatus',
-                              title: 'Estatus',
-                              titleClassName: '!text-center',
-                              sortable: true,
-                              render: ({estatus}) => (  
-                                
-                                
-                                                             
-                                <div className={`${estatus === 1 ? 'text-success bg-success-light' : 'text-danger bg-danger-light'} flex items-center w-max`}>                           
-                                    <div>
-                                        <span className={`badge badge-outline-${estatus === 1 ? 'success' : 'danger'} `}>{estatus === 1 ? 'Activo' : 'Baja'}</span>
+                            {
+                                accessor: 'nombre_visitante',
+                                title: 'Visitante',
+                                cellsClassName: '!text-center !text-lowercase',
+                                sortable: true,
+                                render: ({nombre_visitante,img_visitante}) => (
+                                    <div className='flex items-center md-2 w-max'>
+                                        <p className='ltr:mr-2 rtl:ml-2'>{nombre_visitante}</p>
+                                        <img className="w-9 h-9 rounded-full object-cover" src={img_visitante} alt="" />
+                                        
                                     </div>
-                                </div>
-                             ),  
-                            
-                            },     
+                                ),
+                            }, 
+                            { accessor: 'temporada', title: 'Temporada',cellsClassName: 'text-center', sortable: true },  
+                            { accessor: 'ganador_descripcion', title: 'Ganador',cellsClassName: 'text-center', sortable: true },  
+                            { accessor: 'estatus_descripcion', title: 'Estatus',cellsClassName: 'text-center', sortable: true },
+                            { accessor: 'observaciones', title: 'Observaciones',cellsClassName: 'text-center', sortable: true },
                             {
                                 accessor: 'action',
                                 title: 'Action',
